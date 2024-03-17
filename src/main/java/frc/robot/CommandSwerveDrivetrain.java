@@ -49,8 +49,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command runPathplannerPath(String pathname){
         return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathname));
     }
-    public InstantCommand zeroGyro(){
-    }
+    
     public ChassisSpeeds getCurrentRobotChassisSpeeds(){
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
