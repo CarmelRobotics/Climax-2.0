@@ -1,31 +1,34 @@
-package frc.robot.commands;
+package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Shooter.*;
 
-public class ShootSpeaker extends Command {
+public class AutoAim extends Command {
     // Called once the command ends or is interrupted.
     Shooter shooter;
-    public ShootSpeaker(Shooter s){
-        shooter = s;
+    double angle;
+    public AutoAim(Shooter b, double angle){
+        shooter = b;
+        this.angle = angle;
     }
     @Override
     public void initialize(){
-        
+        shooter.pivotToAngle(angle);
     }
     @Override
     public void execute(){
-        shooter.autoShoot();
+        
     }
     @Override
-    public void end(boolean interrupted)
+    public void end(boolean ainterrupted)
     {
+        shooter.pivot(0);   
     }
 
     // Returns true when the command should end.
   @Override
     public boolean isFinished()
     {
-     return false;
+     return true;
      } 
 }   

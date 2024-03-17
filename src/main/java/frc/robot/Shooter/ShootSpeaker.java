@@ -1,17 +1,13 @@
-package frc.robot.commands;
+package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Shooter.ShooterState;
+import frc.robot.Shooter.Shooter;
 
-public class ShootNote extends Command {
+public class ShootSpeaker extends Command {
     // Called once the command ends or is interrupted.
     Shooter shooter;
-    double speed;
-    public ShootNote(Shooter s, double x){
+    public ShootSpeaker(Shooter s){
         shooter = s;
-        speed = x;
-        shooter.setShoot(ShooterState.SHOOTING);
     }
     @Override
     public void initialize(){
@@ -19,13 +15,11 @@ public class ShootNote extends Command {
     }
     @Override
     public void execute(){
-        shooter.shoot(-speed);
+        shooter.autoShoot();
     }
     @Override
     public void end(boolean interrupted)
     {
-        shooter.shoot(0);
-        shooter.setShoot(ShooterState.DEFAULT);
     }
 
     // Returns true when the command should end.

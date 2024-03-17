@@ -1,42 +1,44 @@
-package frc.robot.commands;
+package frc.robot.Intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Shooter.ShooterState;
+import frc.robot.Shooter.BTS;
+import frc.robot.Intake.Intake;
+import frc.robot.Shooter.Shooter;
 
-public class AutoShoot extends Command {
+public class runIntakeforTime extends Command {
     // Called once the command ends or is interrupted.
-    Shooter shooter;
+    Intake intake;
     double speed;
     Timer timey;
-    public AutoShoot(Shooter s, double x){
-        shooter = s;
+    double time;
+    public runIntakeforTime(Intake intake, double s,double time){
+        this.intake = intake;
+        speed = s;
         timey = new Timer();
-        speed = x;
+        this.time = time;
     }
     @Override
     public void initialize(){
+        timey.reset();
         timey.start();
-        shooter.setShoot(ShooterState.SHOOTING);
     }
     @Override
     public void execute(){
-        shooter.shoot(-speed);
+        intake.runIntake(speed);
+        //0.4 optimal speed
     }
     @Override
     public void end(boolean interrupted)
     {
-        shooter.shoot(0);
-        shooter.setShoot(ShooterState.DEFAULT);
         timey.stop();
-        timey.reset();
+        intake.runIntake(0);
     }
 
     // Returns true when the command should end.
   @Override
     public boolean isFinished()
     {
-     return timey.get() > 1;
+        return timey.get() > time;
      } 
 }   

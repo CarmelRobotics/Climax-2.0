@@ -1,16 +1,16 @@
-package frc.robot.commands;
+package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.BTS;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Shooter.Shooter.ShooterState;
 
-public class RunBTS extends Command {
+public class ShootNote extends Command {
     // Called once the command ends or is interrupted.
-    BTS bts;
+    Shooter shooter;
     double speed;
-    public RunBTS(BTS b, double s){
-        bts = b;
-        speed = s;
+    public ShootNote(Shooter s, double x){
+        shooter = s;
+        speed = x;
+        shooter.setShoot(ShooterState.SHOOTING);
     }
     @Override
     public void initialize(){
@@ -18,13 +18,13 @@ public class RunBTS extends Command {
     }
     @Override
     public void execute(){
-        bts.set(speed);
-        System.out.println("running bts");
+        shooter.shoot(-speed);
     }
     @Override
     public void end(boolean interrupted)
     {
-        bts.set(0);
+        shooter.shoot(0);
+        shooter.setShoot(ShooterState.DEFAULT);
     }
 
     // Returns true when the command should end.

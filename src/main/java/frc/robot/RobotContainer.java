@@ -43,8 +43,8 @@ public class RobotContainer {
         ));
 
     leftJoystick.button(5).whileTrue(drivetrain.applyRequest(() -> brake));
-    leftJoystick.button(6).whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-leftJoystick.getY(), -leftJoystick.getX()))));
+   // leftJoystick.button(6).whileTrue(drivetrain
+       // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-leftJoystick.getY(), -leftJoystick.getX()))));
 
     // reset the field-centric heading on left bumper press
     leftJoystick.button(3).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));

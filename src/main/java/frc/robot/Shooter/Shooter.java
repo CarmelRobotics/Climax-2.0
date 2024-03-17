@@ -1,4 +1,4 @@
-package frc.Shooter;
+package frc.robot.Shooter;
 
 import java.sql.Driver;
 
@@ -23,10 +23,12 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CommandSwerveDrivetrain;
 import frc.robot.Constants;
 import frc.robot.RockinTalon;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.subsystems.LED.STATUS;
+import frc.robot.Misc.LED.STATUS;
+import frc.robot.Misc.*;
 
 public class Shooter extends SubsystemBase {
     private RockinTalon shootmotorone;
@@ -36,7 +38,7 @@ public class Shooter extends SubsystemBase {
     public double currentAngle;
    // private double amountMove;
     private double targetAngle;
-    private SwerveSubsystem swerve;
+
     //private LED l;
     private ProfiledPIDController pivotController;
     private ArmFeedforward ffController;
@@ -44,17 +46,17 @@ public class Shooter extends SubsystemBase {
     private CANcoder encoder;
     private Vision limelight;
     private double encoderOffset = 153;
-  
+    private CommandSwerveDrivetrain swerve;
     private Rotation2d pivotGoal = Rotation2d.fromDegrees(45);
     private PivotState pivotState = PivotState.STOW;
     private ShooterState shooterState = ShooterState.DEFAULT;
     public double secondsPerDegree;
     private double pidOutput;
     private double ffOutput;
-    public Shooter(SwerveSubsystem s){
+    public Shooter(CommandSwerveDrivetrain s){
         limitswitch = new DigitalInput(0);
         encoder = new CANcoder(21);
-
+        swerve = s;
         shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN);
         shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN);
         limelight = new Vision();
@@ -62,7 +64,7 @@ public class Shooter extends SubsystemBase {
         pivotmotorone.setSmartCurrentLimit(frc.robot.Constants.Shooter.PIVOT_CURRENT_LIMIT);
         pivotController = Constants.Shooter.SHOOTER_PID_CONTROLLER;
         ffController = Constants.Shooter.SHOOTER_FF_CONTROLLER;
-        swerve = s;
+
     }
     @Override
     public void periodic(){
@@ -70,7 +72,7 @@ public class Shooter extends SubsystemBase {
        SmartDashboard.putNumber("Goal angle", pivotGoal.getDegrees());
        SmartDashboard.putNumber("PID val", pidOutput);
        SmartDashboard.putNumber("FF output", ffOutput);
-       SmartDashboard.putNumber("Shooter Speed", getAverageRollerSpeed());
+      // SmartDashboard.putNumber("Shooter Speed", getAverageRollerSpeed());
        SmartDashboard.putString("Current State",pivotState.toString());
        calcAndApplyControllers();
     //    if(limitswitch.get()){
@@ -231,7 +233,7 @@ public class Shooter extends SubsystemBase {
         pivotToAngle(FieldConstants.AMP_ANGLE);
         shoot(1);
     }
-    public double getSpeakerAngle(SwerveSubsystem drive){
+    public double getSpeakerAngle(CommandSwerveDrivetrain drive){
         double x;
         if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
              x = drive.getPose().getX() - Constants.FieldConstants.SPEAKER_X_RED;

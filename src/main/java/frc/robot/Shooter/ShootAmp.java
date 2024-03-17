@@ -1,7 +1,7 @@
-package frc.robot.commands;
+package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Shooter.Shooter;
 
 public class ShootAmp extends Command {
     // Called once the command ends or is interrupted.

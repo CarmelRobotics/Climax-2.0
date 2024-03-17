@@ -1,15 +1,17 @@
-package frc.robot.commands;
+package frc.robot.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Shooter.BTS;
+import frc.robot.Intake.Intake;
+import frc.robot.Shooter.Shooter;
 
-public class PivotManual extends Command {
+public class RunIntake extends Command {
     // Called once the command ends or is interrupted.
-    Shooter shooter;
+    Intake intake;
     double speed;
-    public PivotManual(Shooter s, double x){
-        shooter = s;
-        speed = x;
+    public RunIntake(Intake intake, double s){
+        this.intake = intake;
+        speed = s;
     }
     @Override
     public void initialize(){
@@ -17,12 +19,13 @@ public class PivotManual extends Command {
     }
     @Override
     public void execute(){
-        shooter.pivot(speed);
+        intake.runIntake(speed);
+        //0.4 optimal speed
     }
     @Override
     public void end(boolean interrupted)
     {
-        shooter.pivot(0);
+        intake.runIntake(0);
     }
 
     // Returns true when the command should end.
