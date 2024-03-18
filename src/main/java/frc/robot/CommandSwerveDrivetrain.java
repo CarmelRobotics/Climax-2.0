@@ -53,6 +53,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public ChassisSpeeds getCurrentRobotChassisSpeeds(){
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
+    
     private void configurePathPlanner() {
         double driveBaseRadius = 0;
         for (var moduleLocation : m_moduleLocations) {
@@ -85,7 +86,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 this); // Subsystem for requirements
     }
     public Pose2d getPose(){
-        return getState().Pose;
+        return this.getState().Pose;
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

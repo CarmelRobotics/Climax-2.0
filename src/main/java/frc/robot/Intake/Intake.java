@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase{
     private MotorController intakemotorOne;
     private IntakeState state = IntakeState.DEFAULT;
-    //private MotorController intakemotorTwo;
+    private MotorController intakemotorTwo;
     private AnalogInput distanceSensor;
     public Intake(){
         distanceSensor = new AnalogInput(4);
         intakemotorOne = new CANSparkMax(Constants.Intake.INTAKE_CAN_ONE,MotorType.kBrushless );
-        //intakemotorTwo = new CANSparkMax(Constants.Intake.INTAKE_CAN_TWO, MotorType.kBrushless);
+        intakemotorTwo = new CANSparkMax(Constants.Intake.INTAKE_CAN_TWO, MotorType.kBrushless);
     }
    // @Override
     // public void periodic(){
@@ -42,7 +42,7 @@ public class Intake extends SubsystemBase{
     //}
     public void runIntake(double speed){
         intakemotorOne.set(speed);
-        //intakemotorTwo.set(-speed);
+        intakemotorTwo.set(speed);
     }
     public double getDist(){
         return AnalogInput.getGlobalSampleRate();
