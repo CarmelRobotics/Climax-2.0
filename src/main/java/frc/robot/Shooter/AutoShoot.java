@@ -8,27 +8,31 @@ import frc.robot.Shooter.Shooter.ShooterState;
 public class AutoShoot extends Command {
     // Called once the command ends or is interrupted.
     Shooter shooter;
+    BTS bts;
     double speed;
     Timer timey;
-    public AutoShoot(Shooter s, double x){
+    public AutoShoot(Shooter s, double x, BTS b){
         shooter = s;
+        bts = b;
         timey = new Timer();
         speed = x;
     }
     @Override
     public void initialize(){
         timey.start();
-        shooter.setShoot(ShooterState.SHOOTING);
+        //shooter.setShoot(ShooterState.SHOOTING);
     }
     @Override
     public void execute(){
         shooter.shoot(-speed);
+        bts.set(1);
     }
     @Override
     public void end(boolean interrupted)
     {
         shooter.shoot(0);
-        shooter.setShoot(ShooterState.DEFAULT);
+        bts.set(0);
+        //shooter.setShoot(ShooterState.DEFAULT);
         timey.stop();
         timey.reset();
     }

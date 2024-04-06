@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,9 +57,12 @@ public class Shooter extends SubsystemBase {
     public Shooter(CommandSwerveDrivetrain s){
         limitswitch = new DigitalInput(0);
         encoder = new CANcoder(21);
+
         swerve = s;
         shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN);
         shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN);
+        shootmotorone.setInverted(false);
+        shootmotortwo.setInverted(false);
         limelight = new Vision();
         pivotmotorone = new CANSparkMax(frc.robot.Constants.Shooter.SHOOTER_PIVOTONE_CAN, MotorType.kBrushless);
         pivotmotorone.setSmartCurrentLimit(frc.robot.Constants.Shooter.PIVOT_CURRENT_LIMIT);
@@ -72,22 +76,16 @@ public class Shooter extends SubsystemBase {
        SmartDashboard.putNumber("Goal angle", pivotGoal.getDegrees());
        SmartDashboard.putNumber("PID val", pidOutput);
        SmartDashboard.putNumber("FF output", ffOutput);
+       SmartDashboard.putNumber("Manual output", pivotmotorone.get());
       // SmartDashboard.putNumber("Shooter Speed", getAverageRollerSpeed());
        SmartDashboard.putString("Current State",pivotState.toString());
        calcAndApplyControllers();
     //    if(limitswitch.get()){
     //     setMode(ShooterState.ERROR);
     //    }
-       switch (shooterState) {
-        case SHOOTING: 
-            shoot(1);
-            break;
-        case AMP:
-            shoot(-0.37);
-            break;
-        case DEFAULT:
-            shoot(-0.07);
-            break;
+       if(shootmotorone.get() == 0 || shootmotorone.get() == 0.07){
+        shootmotorone.set(-0.02);
+        shootmotortwo.set(-0.02);
        }
        switch (pivotState) {
         case SPEAKERSHOOT:
@@ -175,7 +173,7 @@ public class Shooter extends SubsystemBase {
 
     //gets the current pivot angle from the CanCoder
     public double getPivotAngle(){
-       return (Rotation2d.fromRotations(encoder.getAbsolutePosition().getValue())).getDegrees() + encoderOffset;
+       return (encoder.getAbsolutePosition().getValue() - encoderOffset);
     }
     //public double getNavxPitch(){
       //  return navx.getPitch();
@@ -193,7 +191,7 @@ public class Shooter extends SubsystemBase {
     }
     //used for setting pivot 
     public void pivot(double speed){
-       // pivotmotorone.set(speed);
+       pivotmotorone.set(speed);
     }
     // a bunch of unused methods 
     public double getPosition(){
@@ -208,7 +206,7 @@ public class Shooter extends SubsystemBase {
         return (encoder.getVelocity().getValue()) * (2*Math.PI);
     }
     // public void setAngle(double degree){
-    //     currentAngle = degree;
+    //     currentAngle = degree;`
         
     // }
 

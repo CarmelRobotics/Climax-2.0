@@ -53,6 +53,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public ChassisSpeeds getCurrentRobotChassisSpeeds(){
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
+    public Command setPose(Pose2d pose){
+        return runOnce(() -> this.seedFieldRelative(pose));
+    }
     
     private void configurePathPlanner() {
         double driveBaseRadius = 0;

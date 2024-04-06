@@ -1,57 +1,56 @@
+// rip to all my old code of the arduino system
+
 package frc.robot.Misc;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class LED extends SubsystemBase {
-    private pinManager pins;
+    private BlinkinLEDController controller;
+    private boolean note = false;
+    private DigitalInput noteSensor;
     private STATUS mode;
 
-    public boolean testState = true;
-    public DigitalOutput test = new DigitalOutput(6);
-
-    public LED() { pins = new pinManager(new int[] {2,3,4,5}); mode = STATUS.BOOTING; }
+    public LED(BlinkinLEDController controll, DigitalInput nSensor ) { controller = controll; noteSensor = nSensor; mode = STATUS.DEFAULT; }
 
     public void setMode(STATUS status) {
         switch (mode) {
+            case BROWNOUT -> { mode = STATUS.BROWNOUT; }
             case BOOTING, AUTO -> { if (status != STATUS.SHOOTING) mode = status; }
             case VIBE -> { mode = STATUS.VIBE; }
             case SHOOTING, DEFAULT -> { mode = status; }
             case ERROR -> { if (status != STATUS.DEFAULT) mode = status; }
             default -> { mode = status; }
         }
-        //System.out.println("<LED INTERNALS> - " + status + " mode enabled");
     }
 
-    public STATUS getState() { return mode; }
+    public void setBrownout(boolean currentlyBrown) {
+        if (currentlyBrown) mode = STATUS.BROWNOUT;
+        else mode = STATUS.DEFAULT;
+    }
+
+    public STATUS getState() { updateCurrentMode(); return mode; }
 
     public void defaultState() { if (mode != STATUS.VIBE) { setMode(STATUS.DEFAULT); } else { mode = STATUS.DEFAULT; } }
 
     @Override
     public void periodic(){
-        switch (mode) {
-            case BOOTING:
-                pins.setBinary("1000");
-                break;
-            case DEFAULT:
-                pins.setBinary("1001");
-                break;
-            case SHOOTING:
-                pins.setBinary("1010");
-                break;
-            case AUTO:
-                pins.setBinary("1011");
-                break;
-            case VIBE:
-                pins.setBinary("1100");
-                break;
-            case ERROR:
-                pins.setBinary("1101");
-                break;
-            default:
-                break;
-        }
-        test.set(testState);
+        updateNoteSatus();
+        BlinkinLEDController.BlinkinPattern pattern = StatusEnumBlinkinTranslator(mode, note);
+        controller.setPattern(pattern);
+    }
+
+    public void updateNoteSatus() {
+        note = noteSensor.get();
+    }
+
+    private void updateCurrentMode() {
+        mode = BlinkinEnumStatusTranslator(controller.getPattern());
     }
 
     public static enum STATUS {
@@ -60,42 +59,42 @@ public class LED extends SubsystemBase {
         SHOOTING,
         AUTO,
         VIBE,
-        ERROR
+        ERROR,
+        BROWNOUT
     }
 
-    private class pinManager {
-        private DigitalOutput[] pins;
-        private int[] pinIDs;
-        public pinManager(int[] npinIDs) {
-            pinIDs = npinIDs;
-            pins = new DigitalOutput[pinIDs.length];
-            for (int i = 0; i < pinIDs.length; i++)
-                pins[i] = new DigitalOutput(pinIDs[i]);
+    public static STATUS BlinkinEnumStatusTranslator(BlinkinLEDController.BlinkinPattern pattern) {
+        switch (pattern) {
+            case RAINBOW_RAINBOW_PALETTE:
+                return STATUS.VIBE;
+            case RED, BLUE, GREEN:
+                return STATUS.DEFAULT;
+            case VIOLET:
+                return STATUS.SHOOTING;
+            case ORANGE:
+                return STATUS.BROWNOUT;
+            default:
+                return STATUS.ERROR;
         }
+    }
 
-        public void writeBoolean(boolean[] data) {
-            if (data.length <= pins.length) {
-                for (int i = 0; i < data.length; i++) {
-                    DigitalOutput pin = pins[i];
-                    boolean dat = data[i];
-                    pin.set(dat);
-                    // pins[i].set(data[i]);
-                    // System.out.println("<LED INTERNALS> - PIN " + pin.getChannel() + " set to value " + dat);
+    public static BlinkinLEDController.BlinkinPattern StatusEnumBlinkinTranslator(STATUS status, boolean note) {
+        if (note && status == STATUS.DEFAULT)return BlinkinLEDController.BlinkinPattern.GREEN;
+        switch (status) {
+            case VIBE:
+                return BlinkinLEDController.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
+            case DEFAULT:
+                Optional<Alliance> ally = DriverStation.getAlliance();
+                if (ally.isPresent()) {
+                    Alliance currentAlliance = ally.get();
+                    if (currentAlliance == Alliance.Red) return BlinkinLEDController.BlinkinPattern.RED;
+                    if (currentAlliance == Alliance.Blue) return BlinkinLEDController.BlinkinPattern.BLUE;
                 }
-            }
-        }
-
-        public void clearOut() {
-            for (int i = 0; i < pins.length; i++) {
-                pins[i].set(false);
-            }
-        }
-
-        public void setBinary(String data) {
-            boolean[] ndata = new boolean[data.length()];
-            for (int i = 0; i < data.length(); i++)
-                ndata[i] = (data.charAt(i) == '1');
-            writeBoolean(ndata);
+                else return BlinkinLEDController.BlinkinPattern.WHITE;
+            case BROWNOUT:
+                return BlinkinLEDController.BlinkinPattern.ORANGE;
+            default:
+                return BlinkinLEDController.BlinkinPattern.FIRE_LARGE;
         }
     }
 }

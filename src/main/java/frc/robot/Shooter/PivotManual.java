@@ -17,7 +17,8 @@ public class PivotManual extends Command {
     }
     @Override
     public void execute(){
-        shooter.pivot(speed);
+        shooter.pivot(0.5);
+        System.out.println("RUNNING PIVOT: ");
     }
     @Override
     public void end(boolean interrupted)

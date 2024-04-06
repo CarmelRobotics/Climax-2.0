@@ -59,7 +59,7 @@ public final class Constants
   public static final class Shooter{
     public final static int SHOOTER_MOTORONE_CAN = 14;
     public final static int SHOOTER_MOTORTWO_CAN = 15;
-    public final static int SHOOTER_PIVOTONE_CAN = 16;
+    public final static int SHOOTER_PIVOTONE_CAN = 50;
     public final static int SHOOTER_PIVOTTWO_CAN = 17;
     public final static int SHOOTER_PIVOTTHREE_CAN = 12;
     public final static double FALL_CANCEL_SPEED = 0.1;
@@ -83,8 +83,8 @@ public final class Constants
   public static final class Intake
   {
     public static final int DISTSENSOR_ANALOG_ID = 4;
-    public static final int INTAKE_CAN_ONE = 8;
-    public static final int INTAKE_CAN_TWO = 19;
+    public static final int INTAKE_CAN_ONE = 31;
+    public static final int INTAKE_CAN_TWO = 16;
     public static final I2C.Port i2cPort = I2C.Port.kOnboard;
   }
   public static final class FieldConstants{
@@ -94,11 +94,12 @@ public final class Constants
     public static final double AMP_ANGLE = 45;
   }
   public static final class BTS{
-    public static final int BTS_MOTOR_CAN = 10;
+    public static final int BTS_MOTOR_CAN = 60;
+    public static final int BTS_MOTOR2_CAN = 61;
   }
   public static final class ClimbConstants{
     public static final int CLIMBER_ONE_CAN = 30;
-    public static final int CLIMBER_TWO_CAN = 31;
+    public static final int CLIMBER_TWO_CAN = 8;
   }
   public static class OperatorConstants
   {
@@ -111,5 +112,9 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.001;
     public static final double RIGHT_X_DEADBAND = 0.001;
     public static final double TURN_CONSTANT = 0.075;
+  }
+  public static class BlinkinConstants {
+    public static final int PORT = 0;
+    public static final int NOTE_PORT = 0;
   }
 }

@@ -12,17 +12,24 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Climber.*;
 import frc.robot.Shooter.*;
 import frc.robot.Shooter.Shooter.PivotState;
-import frc.robot.Intake.*;
+import frc.robot.Intake.Intake;
+import frc.robot.Intake.RunIntake;
+import frc.robot.Intake.runIntakeforTime;
 import frc.robot.Intake.Intake.IntakeState;
+import frc.robot.Misc.BlinkinLEDController;
+import frc.robot.Misc.LED;
+import frc.robot.Misc.LED_VIBE;
 import frc.robot.generated.TunerConstants;
 
 public class RobotContainer {
@@ -42,18 +49,19 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
-  //public  final LED ledManager = new LED();
+  private final DigitalInput beamBreak = new DigitalInput(Constants.BlinkinConstants.NOTE_PORT);
+  public  final LED ledManager = new LED(new BlinkinLEDController(), beamBreak);
   private final Shooter shooter = new Shooter(drivetrain);
   Command oneNote;
   
   private final BTS bts = new BTS();
-  private final Intake intakemaxxxer = new Intake();
+  private final Intake intakemaxxxer = new Intake(beamBreak);
   private final Climber climberLeft = new Climber(true);
   private final Climber climberRight = new Climber(false);
   
 
   private void configureBindings() {
-    oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1), new runBTSfortime(bts,1,1));
+    oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1,bts));
       NamedCommands.registerCommand("intake", intakemaxxxer.setIntakeState(IntakeState.INTAKING));
       Command intake = NamedCommands.getCommand("intake");
       Command resetGyro = NamedCommands.getCommand("ZeroGyro");
@@ -74,19 +82,20 @@ public class RobotContainer {
        // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-leftJoystick.getY(), -leftJoystick.getX()))));
 
     // reset the field-centric heading on left bumper press
-    m_guitar.button(5).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    leftJoystick.button(5).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     rightJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunIntake(intakemaxxxer, -0.69), new RunBTS(bts, 0.15)));
-    leftJoystick.button(2).whileTrue(new RunIntake(intakemaxxxer,1));
+    leftJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunBTS(bts,-1), new ShootNote(shooter, -0.45)));
     //m_controller2.button(2).toggleOnTrue(new ZeroGyro(drivebase));
-    leftJoystick.button(1).whileTrue(new RunIntake(intakemaxxxer, -0.69));
+    leftJoystick.button(1).whileTrue(new RunIntake(intakemaxxxer, -0.5));
     leftJoystick.button(3).onTrue(shooter.setPivotMode(PivotState.SPEAKERAIM));
     leftJoystick.button(4).onTrue(shooter.setPivotMode(PivotState.AMPAIM));
-    leftJoystick.button(5).onTrue(shooter.setPivotMode(PivotState.STOW));
+    //leftJoystick.button(5).onTrue(shooter.setPivotMode(PivotState.STOW));
     rightJoystick.button(1).whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 1)));
-    rightJoystick.button(3).whileTrue(new ShootNote(shooter, -0.5));
-   // m_controller1.button(9).toggleOnTrue(new LED_VIBE(ledManager));
-    rightJoystick.button(5).whileTrue(new PivotManual(shooter, 0.75));
-    rightJoystick.button(6).whileTrue(new PivotManual(shooter, -0.75));
+    rightJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 0.15)));
+    leftJoystick.button(9).toggleOnTrue(new LED_VIBE(ledManager));
+    rightJoystick.button(5).whileTrue(new ShootNote(shooter, 1));
+    rightJoystick.button(6).whileTrue(new PivotManual(shooter, -1));
+    
     m_guitar.button(1).whileTrue(new MoveClimber(climberLeft,  .5));
     m_guitar.button(2).whileTrue(new MoveClimber(climberRight,  .5));
     m_guitar.button(3).whileTrue(new MoveClimber(climberLeft, (.5*-1)));
@@ -102,6 +111,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return new SequentialCommandGroup(
+      drivetrain.setPose(new Pose2d(1.5,5.56,Rotation2d.fromDegrees(0))),
+      new AutoShoot(shooter, 1,bts)
+    );
   }
 }
