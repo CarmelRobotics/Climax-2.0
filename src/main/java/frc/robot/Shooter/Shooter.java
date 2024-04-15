@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
     //    if(limitswitch.get()){
     //     setMode(ShooterState.ERROR);
     //    }
-       if(shootmotorone.get() == 0 || shootmotorone.get() == 0.07){
+       if(shootmotorone.get() == 0 || shootmotorone.get() == -0.02){
         shootmotorone.set(-0.02);
         shootmotortwo.set(-0.02);
        }
