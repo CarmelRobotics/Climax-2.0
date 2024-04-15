@@ -131,7 +131,9 @@ public class RobotContainer {
 
     controller.leftTrigger().whileTrue(new RunIntake(intakemaxxxer, -0.5));
     controller.rightTrigger().whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 1)));
-
+    controller.rightBumper().whileTrue(new ParallelCommandGroup(new RunBTS(bts,-1), new ShootNote(shooter, -0.45)));
+    controller.leftBumper().whileTrue(new RunIntake(intakemaxxxer, 1));
+    controller.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
 
     
