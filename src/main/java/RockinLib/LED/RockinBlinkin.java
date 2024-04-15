@@ -4,7 +4,7 @@
 
 // Thank you to viggy96 on chief delphi lmao
 
-package frc.robot.Misc;
+package RockinLib.LED;
 
 import java.util.HashMap;
 
@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc.robot.Constants;
 
 /** Control REV Robotics Blinkin LED controller */
-public class BlinkinLEDController {
+public class RockinBlinkin {
   public enum BlinkinPattern {
     /*
      * Fixed Palette Pattern
@@ -138,7 +138,7 @@ public class BlinkinLEDController {
     }
   };
 
-  private static BlinkinLEDController m_controller = null;
+  private static RockinBlinkin m_controller = null;
   private static Spark m_blinkin;
   private static BlinkinPattern m_currentPattern;
   private static HashMap<Alliance, BlinkinPattern[]> m_allianceColors = new HashMap<Alliance, BlinkinPattern[]>();
@@ -157,7 +157,7 @@ public class BlinkinLEDController {
     BlinkinPattern.STROBE_BLUE
   };
 
-  public BlinkinLEDController() {
+  public RockinBlinkin() {
     m_blinkin = new Spark(Constants.BlinkinConstants.PORT);
 
     m_allianceColors.put(Alliance.Red, RED_ALLIANCE_PATTERNS);
@@ -168,8 +168,8 @@ public class BlinkinLEDController {
    * Get instance of BlinkinLEDController
    * @return BlinkinLEDController object
    */
-  public static BlinkinLEDController getInstance() {
-    if (m_controller == null) m_controller = new BlinkinLEDController();
+  public static RockinBlinkin getInstance() {
+    if (m_controller == null) m_controller = new RockinBlinkin();
     return m_controller;
   }
 

@@ -1,13 +1,13 @@
 package frc.robot.Misc;
 
+import RockinLib.LED.RockinLED;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Misc.LED;
 
 public class LED_VIBE extends Command {
     // Varyables 
-    private LED lights;
+    private RockinLED lights;
 
-    public LED_VIBE(LED ligyboi) {
+    public LED_VIBE(RockinLED ligyboi) {
         // Shooter Object
         lights = ligyboi;
     }
@@ -17,8 +17,8 @@ public class LED_VIBE extends Command {
 
     @Override
     public void execute(){
-        if (lights.getState() != LED.STATUS.VIBE) {
-            lights.setMode(LED.STATUS.VIBE); 
+        if (lights.getState() != RockinLED.STATUS.VIBE) {
+            lights.setMode(RockinLED.STATUS.VIBE); 
         }
     }
     @Override

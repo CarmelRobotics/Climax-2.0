@@ -5,8 +5,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import RockinLib.RockinTalon;
 import frc.robot.Constants;
-import frc.robot.RockinTalon;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,8 +18,8 @@ public class BTS extends SubsystemBase{
     TalonFX BTSMotor;
     TalonFX BTSMotor2 = new TalonFX(61);
     public BTS(){
-        BTSMotor = new TalonFX(60);
-        BTSMotor2 = new TalonFX(61);
+        BTSMotor = new RockinTalon(60,30);
+        BTSMotor2 = new RockinTalon(61,30);
 
     }
     public void set(double speed){

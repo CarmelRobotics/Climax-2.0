@@ -9,6 +9,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import RockinLib.LED.RockinBlinkin;
+import RockinLib.LED.RockinLED;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,8 +35,6 @@ import frc.robot.Intake.Intake;
 import frc.robot.Intake.RunIntake;
 import frc.robot.Intake.runIntakeforTime;
 import frc.robot.Intake.Intake.IntakeState;
-import frc.robot.Misc.BlinkinLEDController;
-import frc.robot.Misc.LED;
 import frc.robot.Misc.LED_VIBE;
 import frc.robot.generated.TunerConstants;
 
@@ -66,7 +68,7 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
   private final DigitalInput beamBreak = new DigitalInput(Constants.BlinkinConstants.NOTE_PORT);
-  public  final LED ledManager = new LED(new BlinkinLEDController(), beamBreak);
+  public  final RockinLED ledManager = new RockinLED(new RockinBlinkin(), beamBreak);
   private final Shooter shooter = new Shooter(drivetrain);
   Command oneNote;
   

@@ -1,6 +1,6 @@
 // rip to all my old code of the arduino system
 
-package frc.robot.Misc;
+package RockinLib.LED;
 
 import java.util.Optional;
 
@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class LED extends SubsystemBase {
-    private BlinkinLEDController controller;
+public class RockinLED extends SubsystemBase {
+    private RockinBlinkin controller;
     private boolean note = false;
     private DigitalInput noteSensor;
     private STATUS mode;
 
-    public LED(BlinkinLEDController controll, DigitalInput nSensor ) { controller = controll; noteSensor = nSensor; mode = STATUS.DEFAULT; }
+    public RockinLED(RockinBlinkin controll, DigitalInput nSensor ) { controller = controll; noteSensor = nSensor; mode = STATUS.DEFAULT; }
 
     public void setMode(STATUS status) {
         switch (mode) {
@@ -43,7 +43,7 @@ public class LED extends SubsystemBase {
     public void periodic(){
         updateNoteSatus();
         SmartDashboard.putBoolean("Note Intaked", noteSensor.get());
-        BlinkinLEDController.BlinkinPattern pattern = StatusEnumBlinkinTranslator(mode, note);
+        RockinBlinkin.BlinkinPattern pattern = StatusEnumBlinkinTranslator(mode, note);
         controller.setPattern(pattern);
     }
 
@@ -65,7 +65,7 @@ public class LED extends SubsystemBase {
         BROWNOUT
     }
 
-    public static STATUS BlinkinEnumStatusTranslator(BlinkinLEDController.BlinkinPattern pattern) {
+    public static STATUS BlinkinEnumStatusTranslator(RockinBlinkin.BlinkinPattern pattern) {
         switch (pattern) {
             case RAINBOW_RAINBOW_PALETTE:
                 return STATUS.VIBE;
@@ -80,23 +80,23 @@ public class LED extends SubsystemBase {
         }
     }
 
-    public static BlinkinLEDController.BlinkinPattern StatusEnumBlinkinTranslator(STATUS status, boolean note) {
-        if (note && status == STATUS.DEFAULT)return BlinkinLEDController.BlinkinPattern.GREEN;
+    public static RockinBlinkin.BlinkinPattern StatusEnumBlinkinTranslator(STATUS status, boolean note) {
+        if (note && status == STATUS.DEFAULT)return RockinBlinkin.BlinkinPattern.GREEN;
         switch (status) {
             case VIBE:
-                return BlinkinLEDController.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
+                return RockinBlinkin.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
             case DEFAULT:
                 Optional<Alliance> ally = DriverStation.getAlliance();
                 if (ally.isPresent()) {
                     Alliance currentAlliance = ally.get();
-                    if (currentAlliance == Alliance.Red) return BlinkinLEDController.BlinkinPattern.RED;
-                    if (currentAlliance == Alliance.Blue) return BlinkinLEDController.BlinkinPattern.BLUE;
+                    if (currentAlliance == Alliance.Red) return RockinBlinkin.BlinkinPattern.RED;
+                    if (currentAlliance == Alliance.Blue) return RockinBlinkin.BlinkinPattern.BLUE;
                 }
-                else return BlinkinLEDController.BlinkinPattern.WHITE;
+                else return RockinBlinkin.BlinkinPattern.WHITE;
             case BROWNOUT:
-                return BlinkinLEDController.BlinkinPattern.ORANGE;
+                return RockinBlinkin.BlinkinPattern.ORANGE;
             default:
-                return BlinkinLEDController.BlinkinPattern.FIRE_LARGE;
+                return RockinBlinkin.BlinkinPattern.FIRE_LARGE;
         }
     }
 }

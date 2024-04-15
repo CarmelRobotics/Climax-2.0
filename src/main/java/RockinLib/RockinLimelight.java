@@ -1,4 +1,4 @@
-package frc.robot.Misc;
+package RockinLib;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -9,13 +9,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Vision extends SubsystemBase {
+public class RockinLimelight extends SubsystemBase {
     public NetworkTable limelight;
     public NetworkTableInstance inst = NetworkTableInstance.getDefault();
     double x;
     double y;
-    public Vision() {
+    double Xoffset;
+    double Yoffset;
+    public RockinLimelight(double Xoffset, double Yoffset) {
         limelight = inst.getTable("limelight");    
+        this.Xoffset = Xoffset;
+        this.Yoffset = Yoffset;
     }
 
     @Override
@@ -31,8 +35,8 @@ public class Vision extends SubsystemBase {
     }
     public Transform2d getRelativeBotPose() {
         Transform2d botpose = getBotPose();
-         x = botpose.getX() - 7.9;
-         y = botpose.getY() - 2.74;
+         x = botpose.getX() - Xoffset;
+         y = botpose.getY() - Yoffset;
 
         botpose = new Transform2d(new Translation2d(x, y), botpose.getRotation());
         return botpose;

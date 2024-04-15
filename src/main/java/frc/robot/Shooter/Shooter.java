@@ -13,6 +13,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.jni.CANSparkMaxJNI;
+
+import RockinLib.RockinLimelight;
+import RockinLib.RockinTalon;
+import RockinLib.LED.RockinLED.STATUS;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -28,9 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommandSwerveDrivetrain;
 import frc.robot.Constants;
-import frc.robot.RockinTalon;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Misc.LED.STATUS;
 import frc.robot.Misc.*;
 
 public class Shooter extends SubsystemBase {
@@ -46,7 +48,7 @@ public class Shooter extends SubsystemBase {
     private ProfiledPIDController pivotController;
     private ArmFeedforward ffController;
     private CANcoder encoder;
-    private Vision limelight;
+    private RockinLimelight limelight;
     private double encoderOffset = 153;
     private CommandSwerveDrivetrain swerve;
     private Rotation2d pivotGoal = Rotation2d.fromDegrees(45);
@@ -62,13 +64,11 @@ public class Shooter extends SubsystemBase {
         encoder = new CANcoder(21);
         config.withCurrentLimits(currentLimit);
         swerve = s;
-        shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN);
-        shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN);
-        shootmotorone.setInverted(false);
-        shootmotortwo.setInverted(false);
+        shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN,30);
+        shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN,30);
         shootmotorone.getConfigurator().apply(config);
         shootmotortwo.getConfigurator().apply(config);
-        limelight = new Vision();
+        limelight = new RockinLimelight(0,0);
         pivotmotorone = new CANSparkMax(frc.robot.Constants.Shooter.SHOOTER_PIVOTONE_CAN, MotorType.kBrushless);
         pivotmotorone.setSmartCurrentLimit(frc.robot.Constants.Shooter.PIVOT_CURRENT_LIMIT);
         pivotController = Constants.Shooter.SHOOTER_PID_CONTROLLER;
