@@ -159,10 +159,12 @@ public class RobotContainer {
       new AutoShoot(shooter, 1, bts),
       new ParallelRaceGroup(drivetrain.runPathplannerPathFile(threenote1), new RunIntake(intakemaxxxer, -1)),
       drivetrain.runPathplannerPathFile(threenote2),
+      drivetrain.stop(),
       new AutoShoot(shooter, 1, bts),
-      drivetrain.runPathplannerPathFile(fournote1),
+      new ParallelRaceGroup(drivetrain.runPathplannerPathFile(fournote1), new RunIntake(intakemaxxxer,-1)),
       drivetrain.runPathplannerPathFile(fournote2),
-      drivetrain.stop()
+      drivetrain.stop(),
+      new AutoShoot(shooter, 1, bts)
     );
   }
 }
