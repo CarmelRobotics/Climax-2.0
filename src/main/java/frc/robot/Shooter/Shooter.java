@@ -15,7 +15,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.jni.CANSparkMaxJNI;
 
 import RockinLib.RockinLimelight;
-import RockinLib.RockinTalon;
+import RockinLib.MotorControllers.RockinTalon;
 import RockinLib.LED.RockinLED.STATUS;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.math.controller.ArmFeedforward;
