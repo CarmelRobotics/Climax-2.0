@@ -2,6 +2,8 @@ package frc.robot.Shooter;
 
 import java.sql.Driver;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -43,7 +45,6 @@ public class Shooter extends SubsystemBase {
     //private LED l;
     private ProfiledPIDController pivotController;
     private ArmFeedforward ffController;
-    private DigitalInput limitswitch;
     private CANcoder encoder;
     private Vision limelight;
     private double encoderOffset = 153;
@@ -52,17 +53,21 @@ public class Shooter extends SubsystemBase {
     private PivotState pivotState = PivotState.STOW;
     private ShooterState shooterState = ShooterState.DEFAULT;
     public double secondsPerDegree;
+    private CurrentLimitsConfigs currentLimit = new CurrentLimitsConfigs();
+    private TalonFXConfiguration config;
     private double pidOutput;
     private double ffOutput;
     public Shooter(CommandSwerveDrivetrain s){
-        limitswitch = new DigitalInput(0);
+       currentLimit.withSupplyCurrentLimit(30);
         encoder = new CANcoder(21);
-
+        config.withCurrentLimits(currentLimit);
         swerve = s;
         shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN);
         shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN);
         shootmotorone.setInverted(false);
         shootmotortwo.setInverted(false);
+        shootmotorone.getConfigurator().apply(config);
+        shootmotortwo.getConfigurator().apply(config);
         limelight = new Vision();
         pivotmotorone = new CANSparkMax(frc.robot.Constants.Shooter.SHOOTER_PIVOTONE_CAN, MotorType.kBrushless);
         pivotmotorone.setSmartCurrentLimit(frc.robot.Constants.Shooter.PIVOT_CURRENT_LIMIT);

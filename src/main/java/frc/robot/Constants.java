@@ -84,7 +84,7 @@ public final class Constants
   {
     public static final int DISTSENSOR_ANALOG_ID = 4;
     public static final int INTAKE_CAN_ONE = 31;
-    public static final int INTAKE_CAN_TWO = 16;
+    public static final int INTAKE_CAN_TWO = 30;
     public static final I2C.Port i2cPort = I2C.Port.kOnboard;
   }
   public static final class FieldConstants{
@@ -98,8 +98,8 @@ public final class Constants
     public static final int BTS_MOTOR2_CAN = 61;
   }
   public static final class ClimbConstants{
-    public static final int CLIMBER_ONE_CAN = 30;
-    public static final int CLIMBER_TWO_CAN = 8;
+    public static final int CLIMBER_ONE_CAN = 55;
+    public static final int CLIMBER_TWO_CAN = 56;
   }
   public static class OperatorConstants
   {
@@ -114,7 +114,7 @@ public final class Constants
     public static final double TURN_CONSTANT = 0.075;
   }
   public static class BlinkinConstants {
-    public static final int PORT = 0;
+    public static final int PORT = 9;
     public static final int NOTE_PORT = 0;
   }
 }

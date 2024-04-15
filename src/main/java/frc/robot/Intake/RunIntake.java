@@ -34,6 +34,6 @@ public class RunIntake extends Command {
   @Override
     public boolean isFinished()
     {
-     return intake.beamSensor.get();
+     return !intake.beamSensor.get();
      } 
 }   

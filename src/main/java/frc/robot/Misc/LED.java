@@ -7,6 +7,7 @@ import java.util.Optional;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -41,6 +42,7 @@ public class LED extends SubsystemBase {
     @Override
     public void periodic(){
         updateNoteSatus();
+        SmartDashboard.putBoolean("Note Intaked", noteSensor.get());
         BlinkinLEDController.BlinkinPattern pattern = StatusEnumBlinkinTranslator(mode, note);
         controller.setPattern(pattern);
     }

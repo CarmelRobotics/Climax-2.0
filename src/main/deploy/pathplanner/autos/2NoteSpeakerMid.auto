@@ -12,27 +12,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "SetHeadingCorrectionTrue"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ZeroGyro"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "2note1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2note1"
+                }
+              }
+            ]
           }
         },
         {
@@ -51,12 +46,6 @@
           "type": "named",
           "data": {
             "name": "stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetHeadingCorrectionFalse"
           }
         }
       ]
