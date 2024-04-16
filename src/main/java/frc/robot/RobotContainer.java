@@ -71,6 +71,9 @@ public class RobotContainer {
   public  final RockinLED ledManager = new RockinLED(new RockinBlinkin(), beamBreak);
   private final Shooter shooter = new Shooter(drivetrain);
   Command oneNote;
+  Command FourNote;
+  Command TwoNoteAmp;
+  Command TwoNoteSource;
   
   private final BTS bts = new BTS();
   private final Intake intakemaxxxer = new Intake(beamBreak);
@@ -82,7 +85,11 @@ public class RobotContainer {
   private PathPlannerPath threenote2 = PathPlannerPath.fromPathFile("3notemid4");
   private PathPlannerPath fournote1 = PathPlannerPath.fromPathFile("4note1");
   private PathPlannerPath fournote2 = PathPlannerPath.fromPathFile("4note2");
-
+  private PathPlannerPath amp1 = PathPlannerPath.fromPathFile("AmpFar1");
+  private PathPlannerPath amp2 = PathPlannerPath.fromPathFile("AmpFar2");
+  private PathPlannerPath source1 = PathPlannerPath.fromPathFile("SourceFar1");
+  private PathPlannerPath source2 = PathPlannerPath.fromPathFile("SourceFar2");
+  
   private void configureBindings() {
     oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1,bts));
       // NamedCommands.registerCommand("intake", new RunIntake(intakemaxxxer, -1));
@@ -148,13 +155,8 @@ public class RobotContainer {
     }
     drivetrain.registerTelemetry(logger::telemeterize);
   }
-
-  public RobotContainer() {
-    configureBindings();
-  }
-
-  public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(
+  public void setUpAuto(){
+     FourNote = new SequentialCommandGroup(
       drivetrain.setPose(twonote1.getPreviewStartingHolonomicPose()),
       new AutoShoot(shooter, 1,bts),
       new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(twonote1)),
@@ -170,5 +172,30 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+      TwoNoteAmp = new SequentialCommandGroup(
+      drivetrain.setPose(amp1.getPreviewStartingHolonomicPose()),
+      new AutoShoot(shooter, 1, bts),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(amp1)),
+      drivetrain.runPathplannerPathFile(amp2),
+      drivetrain.stop(),
+      new AutoShoot(shooter, 1, bts)
+    );
+     TwoNoteSource = new SequentialCommandGroup(
+      drivetrain.setPose(source1.getPreviewStartingHolonomicPose()),
+      new AutoShoot(shooter, 1, bts),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(source1)),
+      drivetrain.runPathplannerPathFile(source2),
+      drivetrain.stop(),
+      new AutoShoot(shooter, 1, bts)
+    );
+  }
+
+  public RobotContainer() {
+    configureBindings();
+    setUpAuto();
+  }
+
+  public Command getAutonomousCommand() {
+    return FourNote;
   }
 }
