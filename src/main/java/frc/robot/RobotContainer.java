@@ -85,10 +85,10 @@ public class RobotContainer {
   private PathPlannerPath threenote2 = PathPlannerPath.fromPathFile("3notemid4");
   private PathPlannerPath fournote1 = PathPlannerPath.fromPathFile("4note1");
   private PathPlannerPath fournote2 = PathPlannerPath.fromPathFile("4note2");
-  private PathPlannerPath amp1 = PathPlannerPath.fromPathFile("AmpFar1");
-  private PathPlannerPath amp2 = PathPlannerPath.fromPathFile("AmpFar2");
-  private PathPlannerPath source1 = PathPlannerPath.fromPathFile("SourceFar1");
-  private PathPlannerPath source2 = PathPlannerPath.fromPathFile("SourceFar2");
+  private PathPlannerPath amp1 = PathPlannerPath.fromPathFile("AmpSide1");
+  private PathPlannerPath amp2 = PathPlannerPath.fromPathFile("AmpSide2");
+  private PathPlannerPath source1 = PathPlannerPath.fromPathFile("SourceSide1");
+  private PathPlannerPath source2 = PathPlannerPath.fromPathFile("SourceSide2");
   
   private void configureBindings() {
     oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1,bts));
