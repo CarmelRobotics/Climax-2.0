@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -80,6 +81,8 @@ public class RobotContainer {
   private final Intake intakemaxxxer = new Intake(beamBreak);
   private final Climber climberLeft = new Climber(true);
   private final Climber climberRight = new Climber(false);
+  private String selectedAuto;
+  private Command autoCommand;
   private PathPlannerPath twonote1 = PathPlannerPath.fromPathFile("2note1");
   private PathPlannerPath twonote2 = PathPlannerPath.fromPathFile("2note2");
   private PathPlannerPath threenote1 = PathPlannerPath.fromPathFile("3notemid3");
@@ -161,6 +164,8 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
   }
   public void setUpAuto(){
+
+
      FourNote = new SequentialCommandGroup(
       drivetrain.setPose(twonote1.getPreviewStartingHolonomicPose()),
       new AutoShoot(shooter, 1,bts),
@@ -177,6 +182,8 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+
+
       TwoNoteAmp = new SequentialCommandGroup(
       drivetrain.setPose(amp1.getPreviewStartingHolonomicPose()),
       new AutoShoot(shooter, 1, bts),
@@ -185,6 +192,8 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+
+
      TwoNoteSource = new SequentialCommandGroup(
       drivetrain.setPose(source1.getPreviewStartingHolonomicPose()),
       new AutoShoot(shooter, 1, bts),
@@ -193,6 +202,8 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+
+
     ThreeNoteAmp = new SequentialCommandGroup(
        drivetrain.setPose(ThreeAmp1.getPreviewStartingHolonomicPose()),
       new AutoShoot(shooter, 1, bts),
@@ -205,6 +216,34 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+
+    selectedAuto = SmartDashboard.getEntry("Auto Chooser").getString("null");
+
+    switch(selectedAuto){
+        case "4note":
+          autoCommand = FourNote;
+          break;
+        case "2notesource":
+          autoCommand = TwoNoteSource;
+          break;
+        case "2noteamp":
+          autoCommand = TwoNoteAmp;
+          break;
+        case "3noteamp":
+          autoCommand = ThreeNoteAmp;
+          break;
+        case "none":
+          autoCommand = null;
+          break;
+        default:
+          autoCommand = oneNote;
+          break;
+
+
+
+
+
+    }
     
   }
 
@@ -214,6 +253,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return FourNote;
+    return autoCommand;
   }
 }
