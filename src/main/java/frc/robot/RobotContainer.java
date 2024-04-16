@@ -74,6 +74,7 @@ public class RobotContainer {
   Command FourNote;
   Command TwoNoteAmp;
   Command TwoNoteSource;
+  Command ThreeNoteAmp;
   
   private final BTS bts = new BTS();
   private final Intake intakemaxxxer = new Intake(beamBreak);
@@ -89,6 +90,10 @@ public class RobotContainer {
   private PathPlannerPath amp2 = PathPlannerPath.fromPathFile("AmpSide2");
   private PathPlannerPath source1 = PathPlannerPath.fromPathFile("SourceSide1");
   private PathPlannerPath source2 = PathPlannerPath.fromPathFile("SourceSide2");
+  private PathPlannerPath ThreeAmp1 = PathPlannerPath.fromPathFile("3NoteAmp1");
+   private PathPlannerPath ThreeAmp2 = PathPlannerPath.fromPathFile("3NoteAmp2");
+    private PathPlannerPath ThreeAmp3 = PathPlannerPath.fromPathFile("3NoteAmp3");
+     private PathPlannerPath ThreeAmp4 = PathPlannerPath.fromPathFile("3NoteAmp4");
   
   private void configureBindings() {
     oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1,bts));
@@ -188,6 +193,19 @@ public class RobotContainer {
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
     );
+    ThreeNoteAmp = new SequentialCommandGroup(
+       drivetrain.setPose(ThreeAmp1.getPreviewStartingHolonomicPose()),
+      new AutoShoot(shooter, 1, bts),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(ThreeAmp1)),
+      drivetrain.runPathplannerPathFile(ThreeAmp2),
+      drivetrain.stop(),
+      new AutoShoot(shooter, 1, bts),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(ThreeAmp3)),
+      drivetrain.runPathplannerPathFile(ThreeAmp4),
+      drivetrain.stop(),
+      new AutoShoot(shooter, 1, bts)
+    );
+    
   }
 
   public RobotContainer() {
