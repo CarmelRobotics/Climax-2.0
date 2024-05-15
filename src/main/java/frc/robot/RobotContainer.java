@@ -15,6 +15,7 @@ import RockinLib.LED.RockinLED;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
@@ -38,6 +40,8 @@ import frc.robot.Intake.runIntakeforTime;
 import frc.robot.Intake.Intake.IntakeState;
 import frc.robot.Misc.LED_VIBE;
 import frc.robot.generated.TunerConstants;
+
+
 
 public class RobotContainer {
   DriverStation drivestation;
@@ -58,7 +62,7 @@ public class RobotContainer {
   private final CommandJoystick leftJoystick = new CommandJoystick(0); // Left joystick
     private final CommandJoystick rightJoystick = new CommandJoystick(1); // Right Joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-  private final CommandXboxController controller = new CommandXboxController(5);
+  private final CommandXboxController controller = new CommandXboxController(4);
   private final CommandJoystick m_guitar =
       new CommandJoystick(OperatorConstants.GUITAR_PORT);
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -76,6 +80,15 @@ public class RobotContainer {
   Command TwoNoteAmp;
   Command TwoNoteSource;
   Command ThreeNoteAmp;
+
+  //setup pose2d presets
+  Pose2d blueCenter = new Pose2d(1.35,5.5,Rotation2d.fromDegrees(0));
+  Pose2d blueAmp = new Pose2d(0.7,6.7,Rotation2d.fromDegrees(60));
+  Pose2d blueSource = new Pose2d(0.75,4.45,Rotation2d.fromDegrees(-60));
+  Pose2d redCenter = new Pose2d(15.15,5.5,Rotation2d.fromDegrees(180));
+  Pose2d redAmp = new Pose2d(15.85,6.75,Rotation2d.fromDegrees(-60));
+  Pose2d redSource = new Pose2d(15.85,4.45,Rotation2d.fromDegrees(60));
+  
   
   private final BTS bts = new BTS();
   private final Intake intakemaxxxer = new Intake(beamBreak);
@@ -91,12 +104,12 @@ public class RobotContainer {
   private PathPlannerPath fournote2 = PathPlannerPath.fromPathFile("4note2");
   private PathPlannerPath amp1 = PathPlannerPath.fromPathFile("AmpSide1");
   private PathPlannerPath amp2 = PathPlannerPath.fromPathFile("AmpSide2");
-  private PathPlannerPath source1 = PathPlannerPath.fromPathFile("SourceSide1");
-  private PathPlannerPath source2 = PathPlannerPath.fromPathFile("SourceSide2");
+  private PathPlannerPath source1 = PathPlannerPath.fromPathFile("sourceside1");
+  private PathPlannerPath source2 = PathPlannerPath.fromPathFile("sourceside2");
   private PathPlannerPath ThreeAmp1 = PathPlannerPath.fromPathFile("3NoteAmp1");
-   private PathPlannerPath ThreeAmp2 = PathPlannerPath.fromPathFile("3NoteAmp2");
-    private PathPlannerPath ThreeAmp3 = PathPlannerPath.fromPathFile("3NoteAmp3");
-     private PathPlannerPath ThreeAmp4 = PathPlannerPath.fromPathFile("3NoteAmp4");
+  private PathPlannerPath ThreeAmp2 = PathPlannerPath.fromPathFile("3NoteAmp2");
+  private PathPlannerPath ThreeAmp3 = PathPlannerPath.fromPathFile("3NoteAmp3");
+  private PathPlannerPath ThreeAmp4 = PathPlannerPath.fromPathFile("3NoteAmp4");
   
   private void configureBindings() {
     oneNote = new ParallelCommandGroup(new AutoShoot(shooter, 1,bts));
@@ -120,8 +133,10 @@ public class RobotContainer {
     //     drivetrain.applyRequest(() -> drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with
     //                                                                                        // negative Y (forward)
     //         .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-    //         .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    //         .withRotationalRate(-controller.getRightX() * MaxAngularRate)
+    //         .withDeadband(0.1) // Drive counterclockwise with negative X (left)
     //     ));
+      
 
 
     
@@ -132,32 +147,42 @@ public class RobotContainer {
 
     // reset the field-centric heading on left bumper press
     leftJoystick.button(5).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-    rightJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunIntake(intakemaxxxer, -0.69), new RunBTS(bts, 0.15)));
+    // rightJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunIntake(intakemaxxxer, -0.69,bts), new RunBTS(bts, 0.15)));
     leftJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunBTS(bts,-1), new ShootNote(shooter, -0.45)));
     //m_controller2.button(2).toggleOnTrue(new ZeroGyro(drivebase));
-    leftJoystick.button(1).whileTrue(new RunIntake(intakemaxxxer, -0.5));
+    leftJoystick.button(1).whileTrue(new RunIntake(intakemaxxxer, -1,bts));
     leftJoystick.button(3).onTrue(shooter.setPivotMode(PivotState.SPEAKERAIM));
     leftJoystick.button(4).onTrue(shooter.setPivotMode(PivotState.AMPAIM));
     //leftJoystick.button(5).onTrue(shooter.setPivotMode(PivotState.STOW));
     rightJoystick.button(1).whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 1)));
     rightJoystick.button(2).whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 0.15)));
     leftJoystick.button(9).toggleOnTrue(new LED_VIBE(ledManager));
-    rightJoystick.button(5).whileTrue(new RunIntake(intakemaxxxer,1));
+    rightJoystick.button(5).whileTrue(new RunIntake(intakemaxxxer,1,bts));
     rightJoystick.button(6).whileTrue(new PivotManual(shooter, -1));
 
 
-    controller.leftTrigger().whileTrue(new RunIntake(intakemaxxxer, -0.5));
+    controller.leftTrigger().whileTrue(new RunIntake(intakemaxxxer, -0.5,bts));
     controller.rightTrigger().whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 1)));
     controller.rightBumper().whileTrue(new ParallelCommandGroup(new RunBTS(bts,-1), new ShootNote(shooter, -0.45)));
-    controller.leftBumper().whileTrue(new RunIntake(intakemaxxxer, 1));
+    controller.leftBumper().whileTrue(new RunIntake(intakemaxxxer, 1,bts));
     controller.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-
-
+    controller.b().whileTrue(drivetrain.applyRequest(()-> drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
     
-    m_guitar.button(1).whileTrue(new MoveClimber(climberLeft,  .5));
-    m_guitar.button(2).whileTrue(new MoveClimber(climberRight,  .5));
-    m_guitar.button(3).whileTrue(new MoveClimber(climberLeft, (.5*-1)));
-    m_guitar.button(4).whileTrue(new MoveClimber(climberRight, (.5*-1)));
+    // Empty Bowls Guitar Controls
+    m_guitar.button(8).whileTrue(new RunIntake(intakemaxxxer, 1,bts));
+    m_guitar.button(9).whileTrue(new RunIntake(intakemaxxxer, -0.5,bts));
+    m_guitar.button(1).whileTrue(new ParallelCommandGroup(new RunBTS(bts,1), new ShootNote(shooter, 1)));
+    m_guitar.button(2).whileTrue(new ParallelCommandGroup(new RunBTS(bts,-1), new ShootNote(shooter, -1)));
+    m_guitar.button(3).whileTrue(new PivotManual(shooter, 1));
+    controller.x().whileTrue(new ParallelCommandGroup(new MoveClimber(climberLeft,  1),new MoveClimber(climberRight,  1)));
+    controller.y().whileTrue(new ParallelCommandGroup(new MoveClimber(climberLeft,  -1),new MoveClimber(climberRight,  -1)));
+
+    // m_guitar.butto\
+    
+    //n(1).whileTrue(new MoveClimber(climberLeft,  .5));
+    // m_guitar.button(2).whileTrue(new MoveClimber(climberRight,  .5));
+    // m_guitar.button(3).whileTrue(new MoveClimber(climberLeft, (.5*-1)));
+    // m_guitar.button(4).whileTrue(new MoveClimber(climberRight, (.5*-1)));
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
@@ -165,29 +190,29 @@ public class RobotContainer {
   }
   public void setUpAuto(){
 
-
-     FourNote = new SequentialCommandGroup(
-      drivetrain.setPose(twonote1.getPreviewStartingHolonomicPose()),
-      new AutoShoot(shooter, 1,bts),
-      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(twonote1)),
-      drivetrain.runPathplannerPathFile(twonote2),
-      drivetrain.stop(),
-      new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(drivetrain.runPathplannerPathFile(threenote1), new RunIntake(intakemaxxxer, -1)),
-      drivetrain.runPathplannerPathFile(threenote2),
-      drivetrain.stop(),
-      new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(drivetrain.runPathplannerPathFile(fournote1), new RunIntake(intakemaxxxer,-1)),
-      drivetrain.runPathplannerPathFile(fournote2),
-      drivetrain.stop(),
-      new AutoShoot(shooter, 1, bts)
-    );
-
+    //SmartDashboard.putString("Pose", twonote1.getPreviewStartingHolonomicPose().toString());
+    //  FourNote = new SequentialCommandGroup(
+    //   drivetrain.setPose(redCenter),
+    //   new AutoShoot(shooter, 1,bts),
+    //   new WaitCommand(1),
+    //   new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(twonote1)),
+    //   drivetrain.runPathplannerPathFile(twonote2),
+    //   drivetrain.stop(),
+    //   new AutoShoot(shooter, 1, bts),
+    //   new ParallelRaceGroup(drivetrain.runPathplannerPathFile(fournote1), new RunIntake(intakemaxxxer, -1,bts)),
+    //   drivetrain.runPathplannerPathFile(fournote2),
+    //   drivetrain.stop(),
+    //   new AutoShoot(shooter, 1, bts),
+    //   new ParallelRaceGroup(drivetrain.runPathplannerPathFile(threenote1), new RunIntake(intakemaxxxer,-1,bts)),
+    //   drivetrain.runPathplannerPathFile(threenote2),
+    //   drivetrain.stop(),
+    //   new AutoShoot(shooter, 1, bts)
+    // );
 
       TwoNoteAmp = new SequentialCommandGroup(
-      drivetrain.setPose(amp1.getPreviewStartingHolonomicPose()),
+      drivetrain.setPose(blueAmp),
       new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(amp1)),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(amp1)),
       drivetrain.runPathplannerPathFile(amp2),
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
@@ -195,9 +220,9 @@ public class RobotContainer {
 
 
      TwoNoteSource = new SequentialCommandGroup(
-      drivetrain.setPose(source1.getPreviewStartingHolonomicPose()),
+      drivetrain.setPose(redSource),
       new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(source1)),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(source1)),
       drivetrain.runPathplannerPathFile(source2),
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
@@ -205,13 +230,13 @@ public class RobotContainer {
 
 
     ThreeNoteAmp = new SequentialCommandGroup(
-       drivetrain.setPose(ThreeAmp1.getPreviewStartingHolonomicPose()),
+       drivetrain.setPose(blueAmp),
       new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(ThreeAmp1)),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(ThreeAmp1)),
       drivetrain.runPathplannerPathFile(ThreeAmp2),
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts),
-      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1), drivetrain.runPathplannerPathFile(ThreeAmp3)),
+      new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(ThreeAmp3)),
       drivetrain.runPathplannerPathFile(ThreeAmp4),
       drivetrain.stop(),
       new AutoShoot(shooter, 1, bts)
@@ -221,16 +246,57 @@ public class RobotContainer {
 
     switch(selectedAuto){
         case "4note":
-          autoCommand = FourNote;
+          autoCommand = new SequentialCommandGroup(
+               drivetrain.setPose(redCenter),
+               new AutoShoot(shooter, 1,bts),
+               new WaitCommand(1),
+               new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(twonote1)),
+              drivetrain.runPathplannerPathFile(twonote2),
+              drivetrain.stop(),
+              new AutoShoot(shooter, 1, bts),
+              new ParallelRaceGroup(drivetrain.runPathplannerPathFile(fournote1), new RunIntake(intakemaxxxer, -1,bts)),
+              drivetrain.runPathplannerPathFile(fournote2),
+              drivetrain.stop(),
+              new AutoShoot(shooter, 1, bts),
+              new ParallelRaceGroup(drivetrain.runPathplannerPathFile(threenote1), new RunIntake(intakemaxxxer,-1,bts)),
+              drivetrain.runPathplannerPathFile(threenote2),
+              drivetrain.stop(),
+              new AutoShoot(shooter, 1, bts)
+    );
           break;
         case "2notesource":
-          autoCommand = TwoNoteSource;
+          autoCommand = new SequentialCommandGroup(
+                drivetrain.setPose(redSource),
+                new AutoShoot(shooter, 1, bts),
+                new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(source1)),
+                drivetrain.runPathplannerPathFile(source2),
+                drivetrain.stop(),
+                new AutoShoot(shooter, 1, bts)
+    );
           break;
         case "2noteamp":
-          autoCommand = TwoNoteAmp;
+          autoCommand = new SequentialCommandGroup(
+              drivetrain.setPose(blueAmp),
+              new AutoShoot(shooter, 1, bts),
+              new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(amp1)),
+              drivetrain.runPathplannerPathFile(amp2),
+              drivetrain.stop(),
+              new AutoShoot(shooter, 1, bts)
+    );
           break;
         case "3noteamp":
-          autoCommand = ThreeNoteAmp;
+          autoCommand = new SequentialCommandGroup(
+                drivetrain.setPose(blueAmp),
+                new AutoShoot(shooter, 1, bts),
+                new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(ThreeAmp1)),
+                drivetrain.runPathplannerPathFile(ThreeAmp2),
+                drivetrain.stop(),
+                new AutoShoot(shooter, 1, bts),
+                new ParallelRaceGroup(new RunIntake(intakemaxxxer, -1,bts), drivetrain.runPathplannerPathFile(ThreeAmp3)),
+                drivetrain.runPathplannerPathFile(ThreeAmp4),
+                drivetrain.stop(),
+                new AutoShoot(shooter, 1, bts)
+    );
           break;
         case "none":
           autoCommand = null;
@@ -250,9 +316,11 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
     setUpAuto();
+    
   }
 
   public Command getAutonomousCommand() {
+    SmartDashboard.putString("selected auto", autoCommand.toString());
     return autoCommand;
   }
 }

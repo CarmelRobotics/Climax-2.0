@@ -55,19 +55,19 @@ public class Shooter extends SubsystemBase {
     private PivotState pivotState = PivotState.STOW;
     private ShooterState shooterState = ShooterState.DEFAULT;
     public double secondsPerDegree;
-    private CurrentLimitsConfigs currentLimit = new CurrentLimitsConfigs();
-    private TalonFXConfiguration config;
+   // private CurrentLimitsConfigs currentLimit = new CurrentLimitsConfigs();
     private double pidOutput;
     private double ffOutput;
     public Shooter(CommandSwerveDrivetrain s){
-       currentLimit.withSupplyCurrentLimit(30);
+       //currentLimit.withSupplyCurrentLimit(30);
         encoder = new CANcoder(21);
-        config.withCurrentLimits(currentLimit);
+       // config.withCurrentLimits(currentLimit);
+       
         swerve = s;
-        shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN,30);
-        shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN,30);
-        shootmotorone.getConfigurator().apply(config);
-        shootmotortwo.getConfigurator().apply(config);
+        shootmotorone = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORONE_CAN,60);
+        shootmotortwo = new RockinTalon(frc.robot.Constants.Shooter.SHOOTER_MOTORTWO_CAN,60);
+        // shootmotorone.getConfigurator().apply(config);
+        // shootmotortwo.getConfigurator().apply(config);
         limelight = new RockinLimelight(0,0);
         pivotmotorone = new CANSparkMax(frc.robot.Constants.Shooter.SHOOTER_PIVOTONE_CAN, MotorType.kBrushless);
         pivotmotorone.setSmartCurrentLimit(frc.robot.Constants.Shooter.PIVOT_CURRENT_LIMIT);
